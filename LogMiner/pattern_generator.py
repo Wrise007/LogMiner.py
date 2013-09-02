@@ -1,47 +1,4 @@
-def cut_external_format(str):
-#    return str
-    result_str = str
-    start = 0
-    finish = len(str)
-    index = 0
-
-    while start < finish:
-        n = str.find('[', start, finish)
-        m = str.find('<', start, finish)
-        k = str.find('{', start, finish)
-
-        l_max = max([n, m, k])
-        #return string
-
-        if l_max < 0:
-            result_str += str[start, finish]
-        elif n == l_max:
-            cnt, i,start = 1, n, n
-            json_flag = False
-            while cnt > 0:
-                i += 1
-                if i < len(str):
-                    break
-                if str[i] == '[':
-                    cnt += 1
-                elif str[i] == ']':
-                    cnt -= 1
-                elif str[i] == ',':
-                    json_flag = True
-            if cnt > 0:         # Is end of line reached?
-                result_str += '(?P<direct_bracket>\[.{0,})'
-            elif cnt == 0:
-                if json_flag:
-                    result_str += '(?P<json_{0}>\[.{0,})'.format(index)
-                    start, index = i, index + 1
-                else:
-                    result_str += '(?P<direct_bracket_{0}>\[.{0,})'.format(index)
-                    start, index = i, index + 1
-
-        elif m == l_max:
-            pass
-        elif k == l_max:
-            pass
+from external_format import cut_external_format
 
 def get_substrate(string):
 
