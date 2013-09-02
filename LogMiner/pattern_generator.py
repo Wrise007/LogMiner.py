@@ -1,47 +1,42 @@
-def get_substrate_old(string):
+def cut_external_format(str):
+#    return str
+    result_str = str
+    start = 0
+    finish = len(str)
+    index = 0
 
-    delimeter = [': ', ', ', ' ']
-    result_value = [string]
+    while start < finish:
+        n = str.find('[', start, finish)
+        m = str.find('<', start, finish)
+        k = str.find('{', start, finish)
 
-    for item in delimeter:
-        result_value = [str.split(item) for str in result_value if len(str) > 0]
-        value_list = []
-        delimeter_list = []
-        for result_list in result_value:
-            for result_item in result_list:
-                if len(result_item) > 0:
-                    value_list.append(result_item)
-                    delimeter_list.append(item)
-        result_value = value_list
-    print (result_value)
-    print ()
-    return result_value
-
-def cut_external_format(string):
-    return string
-    while True:
-        n = string.find('[')
-        m = string.find('<')
-        k = string.find('{')
-
-        l_max = max([n, m, l])
+        l_max = max([n, m, k])
         #return string
 
         if l_max < 0:
-            return string
+            result_str += str[start, finish]
         elif n == l_max:
-            pass
-            cnt = 1
-            i = n
+            cnt, i,start = 1, n, n
+            json_flag = False
             while cnt > 0:
                 i += 1
-                if i < len(string):
+                if i < len(str):
                     break
-                if string[i] == '[':
+                if str[i] == '[':
                     cnt += 1
-                elif string[i] == ']':
+                elif str[i] == ']':
                     cnt -= 1
-
+                elif str[i] == ',':
+                    json_flag = True
+            if cnt > 0:         # Is end of line reached?
+                result_str += '(?P<direct_bracket>\[.{0,})'
+            elif cnt == 0:
+                if json_flag:
+                    result_str += '(?P<json_{0}>\[.{0,})'.format(index)
+                    start, index = i, index + 1
+                else:
+                    result_str += '(?P<direct_bracket_{0}>\[.{0,})'.format(index)
+                    start, index = i, index + 1
 
         elif m == l_max:
             pass
@@ -50,11 +45,6 @@ def cut_external_format(string):
 
 def get_substrate(string):
 
-    """
-
-    :param string:
-    :return:
-    """
     string = cut_external_format(string)
 
     main_separator = [': ', ', ', ' ']
